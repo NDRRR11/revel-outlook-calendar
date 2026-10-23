@@ -2,19 +2,18 @@
 <Module>
   <ModulePrefs
     title="Outlook Calendar - Custom"
-    description="Custom daily and weekly Outlook calendar display"
+    description="Daily notices and weekly Outlook calendar"
     author="Custom Gadget"
     background="transparent">
 
     <UserPref name="ForeColor" datatype="hidden"/>
     <UserPref name="BackColor" datatype="hidden"/>
-    <UserPref name="rdW" display_name="Width"
-      required="true" default_value="280" datatype="hidden"/>
-    <UserPref name="rdH" display_name="Height"
-      required="true" default_value="190" datatype="hidden"/>
-    <UserPref name="rdKey"
-      default_value="*|DEVICE.REGISTRATIONKEY|*"
-      datatype="hidden"/>
+    <UserPref name="rdW" display_name="Width" required="true"
+      default_value="280" datatype="hidden"/>
+    <UserPref name="rdH" display_name="Height" required="true"
+      default_value="190" datatype="hidden"/>
+    <UserPref name="rdKey" display_name="Device Registration Key"
+      default_value="*|DEVICE.REGISTRATIONKEY|*" datatype="hidden"/>
 
     <Require feature="dynamic-height"/>
 
@@ -23,8 +22,8 @@
 
     <UserPref name="displayMode" display_name="Display mode"
       datatype="enum" default_value="weekly">
-      <EnumValue value="weekly" display_value="Weekly schedule"/>
-      <EnumValue value="daily" display_value="Daily notices"/>
+      <EnumValue value="weekly" display_value="Weekly Schedule"/>
+      <EnumValue value="daily" display_value="Daily Notices"/>
     </UserPref>
 
     <UserPref name="daysToShow" display_name="Days to display (weekly)"
@@ -38,18 +37,18 @@
 
     <UserPref name="scrollMode" display_name="Scroll behavior"
       datatype="enum" default_value="continuous">
-      <EnumValue value="continuous" display_value="Continuous vertical scroll"/>
+      <EnumValue value="continuous" display_value="Continuous scroll"/>
       <EnumValue value="none" display_value="No scrolling"/>
     </UserPref>
 
     <UserPref name="scrollDuration"
       display_name="Scroll cycle duration (seconds)"
       datatype="enum" default_value="30">
-      <EnumValue value="15" display_value="Fast - 15 seconds"/>
-      <EnumValue value="30" display_value="Normal - 30 seconds"/>
-      <EnumValue value="45" display_value="Slow - 45 seconds"/>
-      <EnumValue value="60" display_value="Very slow - 60 seconds"/>
-      <EnumValue value="90" display_value="Extra slow - 90 seconds"/>
+      <EnumValue value="15" display_value="15 seconds"/>
+      <EnumValue value="30" display_value="30 seconds"/>
+      <EnumValue value="45" display_value="45 seconds"/>
+      <EnumValue value="60" display_value="60 seconds"/>
+      <EnumValue value="90" display_value="90 seconds"/>
     </UserPref>
 
     <UserPref name="fontFamily" display_name="Font family"
@@ -77,14 +76,13 @@
       <EnumValue value="solid" display_value="Solid color"/>
     </UserPref>
 
-    <UserPref name="textColor" display_name="Text color (CSS color)"
+    <UserPref name="textColor" display_name="Text color"
       datatype="string" default_value="#FFFFFF"/>
 
-    <UserPref name="backgroundColor"
-      display_name="Background color (CSS color)"
+    <UserPref name="backgroundColor" display_name="Background color"
       datatype="string" default_value="#111D2B"/>
 
-    <UserPref name="accentColor" display_name="Accent color (CSS color)"
+    <UserPref name="accentColor" display_name="Accent color"
       datatype="string" default_value="#8EC5FF"/>
 
     <UserPref name="fieldOrder1" display_name="First field"
@@ -142,10 +140,10 @@
     #calendar {
       width: 100%;
       height: 100%;
-      overflow: hidden;
-      background: transparent;
-      color: __UP_textColor__;
       padding: 2.5%;
+      overflow: hidden;
+      color: __UP_textColor__;
+      background: transparent;
     }
 
     #heading {
@@ -169,14 +167,19 @@
 
     #events.scrolling {
       overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    #events.scrolling::-webkit-scrollbar {
+      display: none;
     }
 
     .event {
-      border-bottom: 1px solid rgba(150,180,205,.25);
-      padding: .55em 0;
       display: flex;
       flex-direction: column;
       gap: .2em;
+      padding: .55em 0;
+      border-bottom: 1px solid rgba(150,180,205,.25);
     }
 
     .event-date {
@@ -186,73 +189,83 @@
     }
 
     .event-time {
-      flex: 0 0 auto;
       font-size: .9em;
     }
 
     .event-title {
-      flex: 1 1 auto;
       font-weight: 600;
       overflow-wrap: anywhere;
     }
 
-    .daily .event {
-      background: transparent;
+    #calendar.daily .event {
+      margin: .65em 0;
+      padding: .35em 0 .65em .8em;
       border: 0;
       border-bottom: 1px solid rgba(150,180,205,.25);
       border-left: .28em solid __UP_accentColor__;
-      border-radius: 0;
-      margin: .65em 0;
-      padding: .35em 0 .65em .8em;
     }
 
-    .daily .event-title {
+    #calendar.daily .event-title {
       font-size: 1.22em;
     }
 
-    .daily .event-time {
+    #calendar.daily .event-time {
       font-size: 1em;
       font-weight: 700;
     }
 
     .status {
       font-size: .75em;
-      opacity: .8;
+      opacity: .85;
       padding: .4em 0;
       overflow-wrap: anywhere;
     }
   </style>
 
   <div id="calendar">
-<div id="heading">
-  GADGET VERSION TEST 2
-  <div id="subheading">HTML loaded; checking JavaScript...</div>
-</div>
+    <div id="heading">
+      WEEKLY SCHEDULE
+      <div id="subheading">Loading calendar...</div>
+    </div>
     <div id="events">
       <div class="status">Loading calendar...</div>
     </div>
   </div>
 
   <script type="text/javascript">
-    var prefs = (window.gadgets &&
-      typeof window.gadgets.Prefs === "function")
-      ? new window.gadgets.Prefs()
-      : null;
+    /*
+      Read settings through Revel's preference substitution.
+      This avoids relying on gadgets.Prefs().getString().
+    */
+    var CONFIG = {
+      icsUrl: "__UP_icsUrl__",
+      displayMode: "__UP_displayMode__",
+      daysToShow: "__UP_daysToShow__",
+      scrollMode: "__UP_scrollMode__",
+      scrollDuration: "__UP_scrollDuration__",
+      fontFamily: "__UP_fontFamily__",
+      fontSize: "__UP_fontSize__",
+      backgroundMode: "__UP_backgroundMode__",
+      textColor: "__UP_textColor__",
+      backgroundColor: "__UP_backgroundColor__",
+      accentColor: "__UP_accentColor__",
+      fieldOrder1: "__UP_fieldOrder1__",
+      fieldOrder2: "__UP_fieldOrder2__",
+      fieldOrder3: "__UP_fieldOrder3__",
+      refreshMinutes: "__UP_refreshMinutes__"
+    };
 
     var refreshTimer = null;
     var scrollTimer = null;
     var scrollPauseUntil = 0;
 
-    function safePref(name, fallback) {
-      try {
-        if (!prefs) return fallback;
-        var value = prefs.getString(name);
-        return value === null || value === undefined || value === ""
-          ? fallback
-          : value;
-      } catch (e) {
+    function cfg(name, fallback) {
+      var value = CONFIG[name];
+      if (value === undefined || value === null ||
+          value === "" || value.indexOf("__UP_") === 0) {
         return fallback;
       }
+      return value;
     }
 
     function offsetDate(days, hours, minutes) {
@@ -308,7 +321,7 @@
         .replace(/\\\\/g, "\\");
     }
 
-    function parseICSDate(raw, params) {
+    function parseICSDate(raw) {
       raw = (raw || "").trim();
 
       if (/^\d{8}$/.test(raw)) {
@@ -325,20 +338,22 @@
 
       if (!m) return null;
 
-      var year = Number(m[1]);
-      var month = Number(m[2]) - 1;
-      var day = Number(m[3]);
-      var hour = Number(m[4]);
-      var minute = Number(m[5]);
-      var second = Number(m[6] || "0");
+      var parts = [
+        Number(m[1]), Number(m[2]) - 1, Number(m[3]),
+        Number(m[4]), Number(m[5]), Number(m[6] || "0")
+      ];
 
       if (m[7] === "Z") {
         return new Date(Date.UTC(
-          year, month, day, hour, minute, second
+          parts[0], parts[1], parts[2],
+          parts[3], parts[4], parts[5]
         ));
       }
 
-      return new Date(year, month, day, hour, minute, second);
+      return new Date(
+        parts[0], parts[1], parts[2],
+        parts[3], parts[4], parts[5]
+      );
     }
 
     function parseICS(text) {
@@ -354,12 +369,11 @@
             "(?:^|\\n)" + key + "(;[^:]*)?:(.*)", "i"
           );
           var match = part.match(re);
-          if (!match) return null;
 
-          return {
+          return match ? {
             params: match[1] || "",
             value: match[2].trim()
-          };
+          } : null;
         }
 
         var summary = getProperty("SUMMARY");
@@ -368,12 +382,9 @@
 
         if (!startProp) return;
 
-        var start = parseICSDate(
-          startProp.value, startProp.params
-        );
-
+        var start = parseICSDate(startProp.value);
         var end = endProp
-          ? parseICSDate(endProp.value, endProp.params)
+          ? parseICSDate(endProp.value)
           : start;
 
         if (!start || isNaN(start.getTime())) return;
@@ -390,14 +401,18 @@
       return out;
     }
 
-    function applyBackgroundMode() {
-      var mode = safePref("backgroundMode", "transparent");
-      var color = safePref("backgroundColor", "#111D2B");
-      var background = mode === "solid" ? color : "transparent";
+    function applyStyles() {
+      var bgMode = cfg("backgroundMode", "transparent");
+      var bgColor = cfg("backgroundColor", "#111D2B");
+      var bg = bgMode === "solid" ? bgColor : "transparent";
+      var root = document.getElementById("calendar");
 
-      document.body.style.backgroundColor = background;
-      document.getElementById("calendar").style.backgroundColor =
-        background;
+      document.body.style.backgroundColor = bg;
+      root.style.backgroundColor = bg;
+      root.style.color = cfg("textColor", "#FFFFFF");
+      root.style.fontFamily = cfg("fontFamily", "Arial, sans-serif");
+      root.style.fontSize =
+        (parseInt(cfg("fontSize", "20"), 10) || 20) + "px";
     }
 
     function stopAutoScroll() {
@@ -409,13 +424,10 @@
     }
 
     function startAutoScroll(list) {
-      if (safePref("scrollMode", "continuous") !== "continuous") {
-        return;
-      }
+      if (cfg("scrollMode", "continuous") !== "continuous") return;
 
       var duration =
-        (parseInt(safePref("scrollDuration", "30"), 10) || 30) * 1000;
-
+        (parseInt(cfg("scrollDuration", "30"), 10) || 30) * 1000;
       var last = Date.now();
 
       scrollTimer = setInterval(function() {
@@ -428,7 +440,7 @@
         var max = list.scrollHeight - list.clientHeight;
         if (max <= 2) return;
 
-        list.scrollTop += max * (elapsed / duration);
+        list.scrollTop += max * elapsed / duration;
 
         if (list.scrollTop >= max - 1) {
           list.scrollTop = max;
@@ -445,15 +457,14 @@
     }
 
     function render(events, status) {
-var rawMode = safePref("displayMode", "(missing)");
-      var mode = String(rawMode).toLowerCase().trim();
-
+      var mode = String(cfg("displayMode", "weekly"))
+        .toLowerCase().trim();
 
       if (mode !== "daily" && mode !== "weekly") {
         mode = "weekly";
       }
 
-      var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
+      var days = parseInt(cfg("daysToShow", "7"), 10) || 7;
       var now = new Date();
       now.setHours(0, 0, 0, 0);
 
@@ -468,21 +479,22 @@ var rawMode = safePref("displayMode", "(missing)");
       });
 
       var root = document.getElementById("calendar");
+      var heading = document.getElementById("heading");
+      var subheading = document.getElementById("subheading");
       var list = document.getElementById("events");
 
-      applyBackgroundMode();
-      root.className = mode === "daily" ? "daily" : "weekly";
+      applyStyles();
+      root.className = mode;
 
-      document.getElementById("heading").firstChild.nodeValue =
+      heading.firstChild.nodeValue =
         mode === "daily" ? "TODAY'S MEETINGS" : "WEEKLY SCHEDULE";
 
-      document.getElementById("subheading").textContent =
-        "DEBUG: displayMode=[" + rawMode + "]";
+      subheading.textContent =
+        mode === "daily" ? fmtDate(now) : "NEXT " + days + " DAYS";
 
       list.className =
-        safePref("scrollMode", "continuous") === "continuous"
-          ? "scrolling"
-          : "";
+        cfg("scrollMode", "continuous") === "continuous"
+          ? "scrolling" : "";
 
       stopAutoScroll();
 
@@ -499,36 +511,34 @@ var rawMode = safePref("displayMode", "(missing)");
       }
 
       var order = [
-        safePref("fieldOrder1", "date"),
-        safePref("fieldOrder2", "time"),
-        safePref("fieldOrder3", "title")
+        cfg("fieldOrder1", "date"),
+        cfg("fieldOrder2", "time"),
+        cfg("fieldOrder3", "title")
       ];
 
       list.innerHTML = events.map(function(e) {
-        var date = fmtDate(e.start);
-        var time = e.allDay ? "All day" : fmtTime(e.start);
-
         var fields = {
           date: '<div class="event-date">' +
-            escapeHtml(date) + '</div>',
+            escapeHtml(fmtDate(e.start)) + '</div>',
           time: '<div class="event-time">' +
-            escapeHtml(time) + '</div>',
+            escapeHtml(e.allDay ? "All day" : fmtTime(e.start)) +
+            '</div>',
           title: '<div class="event-title">' +
             escapeHtml(e.title) + '</div>'
         };
 
-        var arranged = order.map(function(key) {
-          return fields[key] || "";
-        }).join("");
-
-        return '<div class="event">' + arranged + '</div>';
+        return '<div class="event">' +
+          order.map(function(key) {
+            return fields[key] || "";
+          }).join("") +
+          '</div>';
       }).join("");
 
       startAutoScroll(list);
     }
 
     function loadCalendar() {
-      var url = safePref("icsUrl", "");
+      var url = cfg("icsUrl", "").trim();
 
       if (!url) {
         render(sampleEvents, null);
@@ -537,20 +547,20 @@ var rawMode = safePref("displayMode", "(missing)");
 
       function processCalendar(text) {
         try {
-          var parsed = parseICS(text);
+          var events = parseICS(text);
 
-          if (!parsed.length) {
-            throw new Error("No calendar events found in the feed.");
+          if (!events.length) {
+            throw new Error("No calendar events were found in the feed.");
           }
 
-          render(parsed, null);
+          render(events, null);
         } catch (e) {
           render([], "Calendar data error: " + e.message);
         }
       }
 
       function showLoadError(e) {
-        render([], "Could not load Outlook calendar. Check the ICS link and browser access. " +
+        render([], "Could not load the Outlook calendar. Check the ICS URL and browser access. " +
           (e && e.message ? e.message : ""));
       }
 
@@ -584,9 +594,7 @@ var rawMode = safePref("displayMode", "(missing)");
         };
 
         xhr.onerror = function() {
-          showLoadError(
-            new Error("The browser blocked the request or could not reach the feed.")
-          );
+          showLoadError(new Error("The browser blocked the request."));
         };
 
         xhr.send();
@@ -599,7 +607,7 @@ var rawMode = safePref("displayMode", "(missing)");
       loadCalendar();
 
       var mins =
-        parseInt(safePref("refreshMinutes", "15"), 10) || 15;
+        parseInt(cfg("refreshMinutes", "15"), 10) || 15;
 
       if (refreshTimer) clearInterval(refreshTimer);
       refreshTimer = setInterval(loadCalendar, mins * 60000);
