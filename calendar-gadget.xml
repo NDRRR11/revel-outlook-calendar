@@ -214,10 +214,10 @@
   </style>
 
   <div id="calendar">
-    <div id="heading">
-      WEEKLY SCHEDULE
-      <div id="subheading">Loading calendar...</div>
-    </div>
+<div id="heading">
+  GADGET VERSION TEST 2
+  <div id="subheading">HTML loaded; checking JavaScript...</div>
+</div>
     <div id="events">
       <div class="status">Loading calendar...</div>
     </div>
