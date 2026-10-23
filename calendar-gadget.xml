@@ -514,36 +514,75 @@
       startAutoScroll(list);
     }
 
-    function loadCalendar() {
-      var url = safePref("icsUrl", "");
+function loadCalendar() {
+  var url = safePref("icsUrl", "");
 
-      if (!url) {
-        render(sampleEvents, null);
-        return;
+  if (!url) {
+    render(sampleEvents, null);
+    return;
+  }
+
+  function processCalendar(text) {
+    try {
+      var parsed = parseICS(text);
+
+      if (!parsed.length) {
+        throw new Error("No calendar events found in the feed.");
       }
 
-      fetch(url, {cache: "no-store"})
-        .then(function(r) {
-          if (!r.ok) {
-            throw new Error("Feed returned HTTP " + r.status);
-          }
-          return r.text();
-        })
-        .then(function(t) {
-          var parsed = parseICS(t);
-
-          if (!parsed.length) {
-            throw new Error("No events found in ICS response");
-          }
-
-          render(parsed, null);
-        })
-        .catch(function(e) {
-          render([], "Could not load Outlook ICS feed. Browser access " +
-            "may be blocked (CORS) or the URL may be unavailable. " +
-            e.message);
-        });
+      render(parsed, null);
+    } catch (e) {
+      render([], "Calendar data error: " + e.message);
     }
+  }
+
+  function showLoadError(e) {
+    render([], "Could not load Outlook calendar. Check the ICS link and browser access. " +
+      (e && e.message ? e.message : ""));
+  }
+
+  try {
+    if (typeof fetch === "function") {
+      fetch(url, { cache: "no-store" })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("Feed returned HTTP " + response.status);
+          }
+          return response.text();
+        })
+        .then(processCalendar)
+        .catch(showLoadError);
+
+      return;
+    }
+
+    // Compatibility fallback for runtimes without fetch().
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        processCalendar(xhr.responseText);
+      } else {
+        showLoadError(
+          new Error("Feed returned HTTP " + xhr.status)
+        );
+      }
+    };
+
+    xhr.onerror = function () {
+      showLoadError(
+        new Error("The browser blocked the request or could not reach the feed.")
+      );
+    };
+
+    xhr.send();
+  } catch (e) {
+    showLoadError(e);
+  }
+}
 
     function onLoad() {
       loadCalendar();
