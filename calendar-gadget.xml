@@ -1,23 +1,13 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
- 
-<ModulePrefs title="Outlook Calendar - Custom"
-    description="Custom weekly and daily calendar display from an ICS feed"
+  <ModulePrefs
+    title="Outlook Calendar - Custom"
+    description="Custom daily and weekly Outlook calendar display"
     author="Custom Gadget"
     background="transparent">
 
-    <UserPref name="ForeColor" datatype="hidden" />
-    <UserPref name="BackColor" datatype="hidden" />
-    <UserPref name="rdW" display_name="Width" required="true"
-      default_value="280" datatype="hidden" />
-    <UserPref name="rdH" display_name="Height" required="true"
-      default_value="190" datatype="hidden" />
-    <UserPref name="rdKey"
-      default_value="*|DEVICE.REGISTRATIONKEY|*"
-      datatype="hidden" />
-
     <Require feature="dynamic-height"/>
-</ModulePrefs>
 
     <UserPref name="icsUrl" display_name="Outlook ICS URL"
       datatype="string" default_value=""/>
@@ -109,7 +99,8 @@
       <EnumValue value="title" display_value="Meeting name"/>
     </UserPref>
 
-    <UserPref name="refreshMinutes" display_name="Refresh interval (minutes)"
+    <UserPref name="refreshMinutes"
+      display_name="Refresh interval (minutes)"
       datatype="enum" default_value="15">
       <EnumValue value="5" display_value="5 minutes"/>
       <EnumValue value="15" display_value="15 minutes"/>
@@ -185,14 +176,8 @@
       font-weight: 700;
     }
 
-    .event-line {
-      display: flex;
-      align-items: flex-start;
-      gap: .65em;
-    }
-
     .event-time {
-      flex: 0 0 5.2em;
+      flex: 0 0 auto;
       font-size: .9em;
     }
 
@@ -221,34 +206,45 @@
       font-weight: 700;
     }
 
-    .all-day {
-      font-style: italic;
-    }
-
     .status {
       font-size: .75em;
       opacity: .8;
       padding: .4em 0;
+      overflow-wrap: anywhere;
     }
   </style>
 
   <div id="calendar">
     <div id="heading">
       WEEKLY SCHEDULE
-      <div id="subheading"></div>
+      <div id="subheading">Loading calendar...</div>
     </div>
     <div id="events">
-      <div class="status">Loading sample calendar...</div>
+      <div class="status">Loading calendar...</div>
     </div>
   </div>
 
   <script type="text/javascript">
-   var prefs = (window.gadgets && typeof gadgets.Prefs === "function")
-  ? new gadgets.Prefs()
-  : null;
-    var timer = null;
+    var prefs = (window.gadgets &&
+      typeof window.gadgets.Prefs === "function")
+      ? new window.gadgets.Prefs()
+      : null;
+
+    var refreshTimer = null;
     var scrollTimer = null;
     var scrollPauseUntil = 0;
+
+    function safePref(name, fallback) {
+      try {
+        if (!prefs) return fallback;
+        var value = prefs.getString(name);
+        return value === null || value === undefined || value === ""
+          ? fallback
+          : value;
+      } catch (e) {
+        return fallback;
+      }
+    }
 
     function offsetDate(days, hours, minutes) {
       var d = new Date();
@@ -259,31 +255,14 @@
     }
 
     var sampleEvents = [
-      {start: offsetDate(0, 8, 30), end: offsetDate(0, 9, 15),
-       title: "Morning Operations Briefing"},
-      {start: offsetDate(0, 10, 0), end: offsetDate(0, 10, 45),
-       title: "Planning & Coordination"},
-      {start: offsetDate(1, 9, 0), end: offsetDate(1, 9, 30),
-       title: "Staff Meeting"},
-      {start: offsetDate(2, 13, 30), end: offsetDate(2, 14, 15),
-       title: "Training Review"},
-      {start: offsetDate(4, 14, 0), end: offsetDate(4, 15, 0),
-       title: "Resource Planning"},
-      {start: offsetDate(6, 11, 0), end: offsetDate(6, 11, 30),
-       title: "Weekly Check-in"},
-      {start: offsetDate(8, 15, 0), end: offsetDate(8, 16, 0),
-       title: "Future Planning Session"}
+      {start: offsetDate(0, 8, 30), title: "Morning Operations Briefing"},
+      {start: offsetDate(0, 10, 0), title: "Planning & Coordination"},
+      {start: offsetDate(1, 9, 0), title: "Staff Meeting"},
+      {start: offsetDate(2, 13, 30), title: "Training Review"},
+      {start: offsetDate(4, 14, 0), title: "Resource Planning"},
+      {start: offsetDate(6, 11, 0), title: "Weekly Check-in"},
+      {start: offsetDate(8, 15, 0), title: "Future Planning Session"}
     ];
-
-function safePref(name, fallback) {
-  try {
-    if (!prefs) return fallback;
-    var value = prefs.getString(name);
-    return value || fallback;
-  } catch (e) {
-    return fallback;
-  }
-}
 
     function fmtDate(d) {
       return d.toLocaleDateString(undefined, {
@@ -312,6 +291,47 @@ function safePref(name, fallback) {
       });
     }
 
+    function unescapeICS(s) {
+      return String(s || "")
+        .replace(/\\n/gi, " ")
+        .replace(/\\,/g, ",")
+        .replace(/\\;/g, ";")
+        .replace(/\\\\/g, "\\");
+    }
+
+    function parseICSDate(raw, params) {
+      raw = (raw || "").trim();
+
+      if (/^\d{8}$/.test(raw)) {
+        return new Date(
+          Number(raw.slice(0, 4)),
+          Number(raw.slice(4, 6)) - 1,
+          Number(raw.slice(6, 8))
+        );
+      }
+
+      var m = raw.match(
+        /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z)?$/
+      );
+
+      if (!m) return null;
+
+      var year = Number(m[1]);
+      var month = Number(m[2]) - 1;
+      var day = Number(m[3]);
+      var hour = Number(m[4]);
+      var minute = Number(m[5]);
+      var second = Number(m[6] || "0");
+
+      if (m[7] === "Z") {
+        return new Date(Date.UTC(
+          year, month, day, hour, minute, second
+        ));
+      }
+
+      return new Date(year, month, day, hour, minute, second);
+    }
+
     function parseICS(text) {
       var unfolded = text.replace(/\r?\n[ \t]/g, "");
       var blocks = unfolded.split("BEGIN:VEVENT").slice(1);
@@ -320,78 +340,42 @@ function safePref(name, fallback) {
       blocks.forEach(function(block) {
         var part = block.split("END:VEVENT")[0];
 
-        function prop(key) {
-          var re = new RegExp(
-            "(?:^|\\n)" + key + "(?:;[^:]*)?:(.*)", "i"
-          );
-          var m = part.match(re);
-          return m ? m[1].trim() : "";
-        }
-
-        function parseDate(key) {
+        function getProperty(key) {
           var re = new RegExp(
             "(?:^|\\n)" + key + "(;[^:]*)?:(.*)", "i"
           );
-          var m = part.match(re);
-          if (!m) return null;
+          var match = part.match(re);
+          if (!match) return null;
 
-          var raw = m[2].trim();
-
-          if (/^\d{8}$/.test(raw)) {
-            return new Date(
-              +raw.slice(0, 4),
-              +raw.slice(4, 6) - 1,
-              +raw.slice(6, 8)
-            );
-          }
-
-          if (/Z$/.test(raw)) {
-            return new Date(
-              raw.slice(0, 4) + "-" +
-              raw.slice(4, 6) + "-" +
-              raw.slice(6, 8) + "T" +
-              raw.slice(9, 11) + ":" +
-              raw.slice(11, 13) + ":" +
-              raw.slice(13, 15) + "Z"
-            );
-          }
-
-          if (m[1] && /VALUE=DATE/i.test(m[1])) {
-            return new Date(
-              +raw.slice(0, 4),
-              +raw.slice(4, 6) - 1,
-              +raw.slice(6, 8)
-            );
-          }
-
-          var iso = raw.replace(
-            /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?$/,
-            "$1-$2-$3T$4:$5:$6"
-          );
-
-          return new Date(iso);
+          return {
+            params: match[1] || "",
+            value: match[2].trim()
+          };
         }
 
-        var title = prop("SUMMARY")
-          .replace(/\\n/g, " ")
-          .replace(/\\,/g, ",")
-          .replace(/\\;/g, ";");
+        var summary = getProperty("SUMMARY");
+        var startProp = getProperty("DTSTART");
+        var endProp = getProperty("DTEND");
 
-        var start = parseDate("DTSTART");
-        var end = parseDate("DTEND");
-        var startMatch = part.match(
-          /(?:^|\n)DTSTART(?:;[^:]*)?:(.*)/i
+        if (!startProp) return;
+
+        var start = parseICSDate(
+          startProp.value, startProp.params
         );
-        var rawStart = startMatch ? startMatch[1].trim() : "";
 
-        if (start && !isNaN(start.getTime())) {
-          out.push({
-            start: start,
-            end: end || start,
-            title: title || "(Untitled meeting)",
-            allDay: /^\d{8}$/.test(rawStart)
-          });
-        }
+        var end = endProp
+          ? parseICSDate(endProp.value, endProp.params)
+          : start;
+
+        if (!start || isNaN(start.getTime())) return;
+
+        out.push({
+          start: start,
+          end: end || start,
+          title: unescapeICS(summary ? summary.value : "") ||
+            "(Untitled meeting)",
+          allDay: /^\d{8}$/.test(startProp.value)
+        });
       });
 
       return out;
@@ -442,10 +426,8 @@ function safePref(name, fallback) {
           scrollPauseUntil = now + 1200;
 
           setTimeout(function() {
-            if (
-              list &&
-              list.scrollTop >= list.scrollHeight - list.clientHeight - 2
-            ) {
+            if (list.scrollTop >=
+                list.scrollHeight - list.clientHeight - 2) {
               list.scrollTop = 0;
             }
           }, 1200);
@@ -454,15 +436,21 @@ function safePref(name, fallback) {
     }
 
     function render(events, status) {
-var rawMode = safePref("displayMode", "(missing)");
-var mode = String(rawMode).toLowerCase().trim();
-var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
+      var mode = String(
+        safePref("displayMode", "weekly")
+      ).toLowerCase().trim();
 
+      if (mode !== "daily" && mode !== "weekly") {
+        mode = "weekly";
+      }
+
+      var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
       var now = new Date();
       now.setHours(0, 0, 0, 0);
 
       var cutoff = new Date(now);
-      cutoff.setDate(cutoff.getDate() + (mode === "daily" ? 1 : days));
+      cutoff.setDate(cutoff.getDate() +
+        (mode === "daily" ? 1 : days));
 
       events = events.filter(function(e) {
         return e.start >= now && e.start < cutoff;
@@ -479,9 +467,8 @@ var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
       document.getElementById("heading").firstChild.nodeValue =
         mode === "daily" ? "TODAY'S MEETINGS" : "WEEKLY SCHEDULE";
 
-document.getElementById("subheading").textContent =
-  "DEBUG displayMode=[" + rawMode + "] | daysToShow=[" +
-  safePref("daysToShow", "(missing)") + "]";
+      document.getElementById("subheading").textContent =
+        mode === "daily" ? fmtDate(now) : "NEXT " + days + " DAYS";
 
       list.className =
         safePref("scrollMode", "continuous") === "continuous"
@@ -511,7 +498,6 @@ document.getElementById("subheading").textContent =
       list.innerHTML = events.map(function(e) {
         var date = fmtDate(e.start);
         var time = e.allDay ? "All day" : fmtTime(e.start);
-        var title = escapeHtml(e.title);
 
         var fields = {
           date: '<div class="event-date">' +
@@ -519,11 +505,11 @@ document.getElementById("subheading").textContent =
           time: '<div class="event-time">' +
             escapeHtml(time) + '</div>',
           title: '<div class="event-title">' +
-            title + '</div>'
+            escapeHtml(e.title) + '</div>'
         };
 
-        var arranged = order.map(function(k) {
-          return fields[k] || "";
+        var arranged = order.map(function(key) {
+          return fields[key] || "";
         }).join("");
 
         return '<div class="event">' + arranged + '</div>';
@@ -532,75 +518,73 @@ document.getElementById("subheading").textContent =
       startAutoScroll(list);
     }
 
-function loadCalendar() {
-  var url = safePref("icsUrl", "");
+    function loadCalendar() {
+      var url = safePref("icsUrl", "");
 
-  if (!url) {
-    render(sampleEvents, null);
-    return;
-  }
-
-  function processCalendar(text) {
-    try {
-      var parsed = parseICS(text);
-
-      if (!parsed.length) {
-        throw new Error("No calendar events found in the feed.");
+      if (!url) {
+        render(sampleEvents, null);
+        return;
       }
 
-      render(parsed, null);
-    } catch (e) {
-      render([], "Calendar data error: " + e.message);
-    }
-  }
+      function processCalendar(text) {
+        try {
+          var parsed = parseICS(text);
 
-  function showLoadError(e) {
-    render([], "Could not load Outlook calendar. Check the ICS link and browser access. " +
-      (e && e.message ? e.message : ""));
-  }
-
-  try {
-    if (typeof fetch === "function") {
-      fetch(url, { cache: "no-store" })
-        .then(function (response) {
-          if (!response.ok) {
-            throw new Error("Feed returned HTTP " + response.status);
+          if (!parsed.length) {
+            throw new Error("No calendar events found in the feed.");
           }
-          return response.text();
-        })
-        .then(processCalendar)
-        .catch(showLoadError);
 
-      return;
-    }
-
-    // Compatibility fallback for runtimes without fetch().
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState !== 4) return;
-
-      if (xhr.status >= 200 && xhr.status < 300) {
-        processCalendar(xhr.responseText);
-      } else {
-        showLoadError(
-          new Error("Feed returned HTTP " + xhr.status)
-        );
+          render(parsed, null);
+        } catch (e) {
+          render([], "Calendar data error: " + e.message);
+        }
       }
-    };
 
-    xhr.onerror = function () {
-      showLoadError(
-        new Error("The browser blocked the request or could not reach the feed.")
-      );
-    };
+      function showLoadError(e) {
+        render([], "Could not load Outlook calendar. Check the ICS link and browser access. " +
+          (e && e.message ? e.message : ""));
+      }
 
-    xhr.send();
-  } catch (e) {
-    showLoadError(e);
-  }
-}
+      try {
+        if (typeof fetch === "function") {
+          fetch(url, {cache: "no-store"})
+            .then(function(response) {
+              if (!response.ok) {
+                throw new Error("Feed returned HTTP " + response.status);
+              }
+              return response.text();
+            })
+            .then(processCalendar)
+            .catch(showLoadError);
+          return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState !== 4) return;
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            processCalendar(xhr.responseText);
+          } else {
+            showLoadError(
+              new Error("Feed returned HTTP " + xhr.status)
+            );
+          }
+        };
+
+        xhr.onerror = function() {
+          showLoadError(
+            new Error("The browser blocked the request or could not reach the feed.")
+          );
+        };
+
+        xhr.send();
+      } catch (e) {
+        showLoadError(e);
+      }
+    }
 
     function onLoad() {
       loadCalendar();
@@ -608,18 +592,19 @@ function loadCalendar() {
       var mins =
         parseInt(safePref("refreshMinutes", "15"), 10) || 15;
 
-      timer = setInterval(loadCalendar, mins * 60000);
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = setInterval(loadCalendar, mins * 60000);
     }
 
-if (window.gadgets &&
-    gadgets.util &&
-    typeof gadgets.util.registerOnLoadHandler === "function") {
-  gadgets.util.registerOnLoadHandler(onLoad);
-} else if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", onLoad);
-} else {
-  onLoad();
-}
+    if (window.gadgets &&
+        window.gadgets.util &&
+        typeof window.gadgets.util.registerOnLoadHandler === "function") {
+      window.gadgets.util.registerOnLoadHandler(onLoad);
+    } else if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", onLoad);
+    } else {
+      onLoad();
+    }
   </script>
   ]]>
   </Content>
