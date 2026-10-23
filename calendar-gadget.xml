@@ -6,6 +6,16 @@
     author="Custom Gadget"
     background="transparent">
 
+    <UserPref name="ForeColor" datatype="hidden"/>
+    <UserPref name="BackColor" datatype="hidden"/>
+    <UserPref name="rdW" display_name="Width"
+      required="true" default_value="280" datatype="hidden"/>
+    <UserPref name="rdH" display_name="Height"
+      required="true" default_value="190" datatype="hidden"/>
+    <UserPref name="rdKey"
+      default_value="*|DEVICE.REGISTRATIONKEY|*"
+      datatype="hidden"/>
+
     <Require feature="dynamic-height"/>
 
     <UserPref name="icsUrl" display_name="Outlook ICS URL"
