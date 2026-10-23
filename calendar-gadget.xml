@@ -1,208 +1,560 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Outlook Calendar - Custom" description="Custom weekly and daily calendar display from an ICS feed" author="Custom Gadget" background="transparent">
+  <ModulePrefs title="Outlook Calendar - Custom"
+    description="Custom weekly and daily calendar display from an ICS feed"
+    author="Custom Gadget"
+    background="transparent">
     <Require feature="dynamic-height"/>
-  </ModulePrefs>
 
-  <UserPref name="icsUrl" display_name="Outlook ICS URL" datatype="string" default_value="" />
-  <UserPref name="displayMode" display_name="Display mode" datatype="enum" default_value="weekly">
-    <EnumValue value="weekly" display_value="Weekly schedule"/>
-    <EnumValue value="daily" display_value="Daily notices"/>
-  </UserPref>
-  <UserPref name="daysToShow" display_name="Days to display (weekly)" datatype="enum" default_value="7">
-    <EnumValue value="3" display_value="3 days"/>
-    <EnumValue value="5" display_value="5 days"/>
-    <EnumValue value="7" display_value="7 days"/>
-    <EnumValue value="10" display_value="10 days"/>
-    <EnumValue value="14" display_value="14 days"/>
-  </UserPref>
-  <UserPref name="scrollMode" display_name="Scroll behavior" datatype="enum" default_value="continuous">
-    <EnumValue value="continuous" display_value="Continuous vertical scroll"/>
-    <EnumValue value="none" display_value="No scrolling"/>
-  </UserPref>
-  <UserPref name="scrollDuration" display_name="Scroll cycle duration (seconds)" datatype="enum" default_value="30">
-    <EnumValue value="15" display_value="Fast - 15 seconds"/>
-    <EnumValue value="30" display_value="Normal - 30 seconds"/>
-    <EnumValue value="45" display_value="Slow - 45 seconds"/>
-    <EnumValue value="60" display_value="Very slow - 60 seconds"/>
-    <EnumValue value="90" display_value="Extra slow - 90 seconds"/>
-  </UserPref>
-  <UserPref name="fontFamily" display_name="Font family" datatype="enum" default_value="Arial, sans-serif">
-    <EnumValue value="Arial, sans-serif" display_value="Arial"/>
-    <EnumValue value="Segoe UI, sans-serif" display_value="Segoe UI"/>
-    <EnumValue value="Verdana, sans-serif" display_value="Verdana"/>
-    <EnumValue value="Tahoma, sans-serif" display_value="Tahoma"/>
-  </UserPref>
-  <UserPref name="fontSize" display_name="Base font size (px)" datatype="enum" default_value="20">
-    <EnumValue value="14" display_value="14 px"/>
-    <EnumValue value="16" display_value="16 px"/>
-    <EnumValue value="18" display_value="18 px"/>
-    <EnumValue value="20" display_value="20 px"/>
-    <EnumValue value="24" display_value="24 px"/>
-    <EnumValue value="28" display_value="28 px"/>
-    <EnumValue value="32" display_value="32 px"/>
-  </UserPref>
-  <UserPref name="backgroundMode" display_name="Background style" datatype="enum" default_value="transparent">
-    <EnumValue value="transparent" display_value="Transparent"/>
-    <EnumValue value="solid" display_value="Solid color"/>
-  </UserPref>
-  <UserPref name="textColor" display_name="Text color (CSS color)" datatype="string" default_value="#FFFFFF"/>
-  <UserPref name="backgroundColor" display_name="Background color (CSS color)" datatype="string" default_value="#111D2B"/>
-  <UserPref name="accentColor" display_name="Accent color (CSS color)" datatype="string" default_value="#8EC5FF"/>
-  <UserPref name="fieldOrder1" display_name="First field" datatype="enum" default_value="date">
-    <EnumValue value="date" display_value="Date"/>
-    <EnumValue value="time" display_value="Time"/>
-    <EnumValue value="title" display_value="Meeting name"/>
-  </UserPref>
-  <UserPref name="fieldOrder2" display_name="Second field" datatype="enum" default_value="time">
-    <EnumValue value="date" display_value="Date"/>
-    <EnumValue value="time" display_value="Time"/>
-    <EnumValue value="title" display_value="Meeting name"/>
-  </UserPref>
-  <UserPref name="fieldOrder3" display_name="Third field" datatype="enum" default_value="title">
-    <EnumValue value="date" display_value="Date"/>
-    <EnumValue value="time" display_value="Time"/>
-    <EnumValue value="title" display_value="Meeting name"/>
-  </UserPref>
-  <UserPref name="refreshMinutes" display_name="Refresh interval (minutes)" datatype="enum" default_value="15">
-    <EnumValue value="5" display_value="5 minutes"/>
-    <EnumValue value="15" display_value="15 minutes"/>
-    <EnumValue value="30" display_value="30 minutes"/>
-    <EnumValue value="60" display_value="60 minutes"/>
-  </UserPref>
+    <UserPref name="icsUrl" display_name="Outlook ICS URL"
+      datatype="string" default_value=""/>
+
+    <UserPref name="displayMode" display_name="Display mode"
+      datatype="enum" default_value="weekly">
+      <EnumValue value="weekly" display_value="Weekly schedule"/>
+      <EnumValue value="daily" display_value="Daily notices"/>
+    </UserPref>
+
+    <UserPref name="daysToShow" display_name="Days to display (weekly)"
+      datatype="enum" default_value="7">
+      <EnumValue value="3" display_value="3 days"/>
+      <EnumValue value="5" display_value="5 days"/>
+      <EnumValue value="7" display_value="7 days"/>
+      <EnumValue value="10" display_value="10 days"/>
+      <EnumValue value="14" display_value="14 days"/>
+    </UserPref>
+
+    <UserPref name="scrollMode" display_name="Scroll behavior"
+      datatype="enum" default_value="continuous">
+      <EnumValue value="continuous" display_value="Continuous vertical scroll"/>
+      <EnumValue value="none" display_value="No scrolling"/>
+    </UserPref>
+
+    <UserPref name="scrollDuration"
+      display_name="Scroll cycle duration (seconds)"
+      datatype="enum" default_value="30">
+      <EnumValue value="15" display_value="Fast - 15 seconds"/>
+      <EnumValue value="30" display_value="Normal - 30 seconds"/>
+      <EnumValue value="45" display_value="Slow - 45 seconds"/>
+      <EnumValue value="60" display_value="Very slow - 60 seconds"/>
+      <EnumValue value="90" display_value="Extra slow - 90 seconds"/>
+    </UserPref>
+
+    <UserPref name="fontFamily" display_name="Font family"
+      datatype="enum" default_value="Arial, sans-serif">
+      <EnumValue value="Arial, sans-serif" display_value="Arial"/>
+      <EnumValue value="Segoe UI, sans-serif" display_value="Segoe UI"/>
+      <EnumValue value="Verdana, sans-serif" display_value="Verdana"/>
+      <EnumValue value="Tahoma, sans-serif" display_value="Tahoma"/>
+    </UserPref>
+
+    <UserPref name="fontSize" display_name="Base font size (px)"
+      datatype="enum" default_value="20">
+      <EnumValue value="14" display_value="14 px"/>
+      <EnumValue value="16" display_value="16 px"/>
+      <EnumValue value="18" display_value="18 px"/>
+      <EnumValue value="20" display_value="20 px"/>
+      <EnumValue value="24" display_value="24 px"/>
+      <EnumValue value="28" display_value="28 px"/>
+      <EnumValue value="32" display_value="32 px"/>
+    </UserPref>
+
+    <UserPref name="backgroundMode" display_name="Background style"
+      datatype="enum" default_value="transparent">
+      <EnumValue value="transparent" display_value="Transparent"/>
+      <EnumValue value="solid" display_value="Solid color"/>
+    </UserPref>
+
+    <UserPref name="textColor" display_name="Text color (CSS color)"
+      datatype="string" default_value="#FFFFFF"/>
+
+    <UserPref name="backgroundColor"
+      display_name="Background color (CSS color)"
+      datatype="string" default_value="#111D2B"/>
+
+    <UserPref name="accentColor" display_name="Accent color (CSS color)"
+      datatype="string" default_value="#8EC5FF"/>
+
+    <UserPref name="fieldOrder1" display_name="First field"
+      datatype="enum" default_value="date">
+      <EnumValue value="date" display_value="Date"/>
+      <EnumValue value="time" display_value="Time"/>
+      <EnumValue value="title" display_value="Meeting name"/>
+    </UserPref>
+
+    <UserPref name="fieldOrder2" display_name="Second field"
+      datatype="enum" default_value="time">
+      <EnumValue value="date" display_value="Date"/>
+      <EnumValue value="time" display_value="Time"/>
+      <EnumValue value="title" display_value="Meeting name"/>
+    </UserPref>
+
+    <UserPref name="fieldOrder3" display_name="Third field"
+      datatype="enum" default_value="title">
+      <EnumValue value="date" display_value="Date"/>
+      <EnumValue value="time" display_value="Time"/>
+      <EnumValue value="title" display_value="Meeting name"/>
+    </UserPref>
+
+    <UserPref name="refreshMinutes" display_name="Refresh interval (minutes)"
+      datatype="enum" default_value="15">
+      <EnumValue value="5" display_value="5 minutes"/>
+      <EnumValue value="15" display_value="15 minutes"/>
+      <EnumValue value="30" display_value="30 minutes"/>
+      <EnumValue value="60" display_value="60 minutes"/>
+    </UserPref>
+
+  </ModulePrefs>
 
   <Content type="html">
   <![CDATA[
   <style>
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
-    body { color: __UP_textColor__; font-family: __UP_fontFamily__; font-size: __UP_fontSize__px; }
-    #calendar { width: 100%; height: 100%; overflow: hidden; background: transparent; color: __UP_textColor__; padding: 2.5%; }
-    #heading { font-size: 1.15em; font-weight: 700; margin-bottom: .6em; color: __UP_accentColor__; letter-spacing: .03em; }
-    #subheading { font-size: .7em; opacity: .8; margin-top: .15em; }
-    #events { height: calc(100% - 3em); overflow: hidden; }
-    #events.scrolling { overflow-y: auto; }
-    .event { border-bottom: 1px solid rgba(150,180,205,.25); padding: .55em 0; display: flex; flex-direction: column; gap: .2em; }
-    .event-date { color: __UP_accentColor__; font-size: .78em; font-weight: 700; }
-    .event-line { display: flex; align-items: flex-start; gap: .65em; }
-    .event-time { flex: 0 0 5.2em; font-size: .9em; }
-    .event-title { flex: 1 1 auto; font-weight: 600; overflow-wrap: anywhere; }
-    .daily .event { background: transparent; border: 0; border-bottom: 1px solid rgba(150,180,205,.25); border-left: .28em solid __UP_accentColor__; border-radius: 0; margin: .65em 0; padding: .35em 0 .65em .8em; }
-    .daily .event-title { font-size: 1.22em; }
-    .daily .event-time { font-size: 1em; font-weight: 700; }
-    .all-day { font-style: italic; }
-    .status { font-size: .75em; opacity: .8; padding: .4em 0; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      color: __UP_textColor__;
+      font-family: __UP_fontFamily__;
+      font-size: __UP_fontSize__px;
+    }
+
+    #calendar {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      color: __UP_textColor__;
+      padding: 2.5%;
+    }
+
+    #heading {
+      font-size: 1.15em;
+      font-weight: 700;
+      margin-bottom: .6em;
+      color: __UP_accentColor__;
+      letter-spacing: .03em;
+    }
+
+    #subheading {
+      font-size: .7em;
+      opacity: .8;
+      margin-top: .15em;
+    }
+
+    #events {
+      height: calc(100% - 3em);
+      overflow: hidden;
+    }
+
+    #events.scrolling {
+      overflow-y: auto;
+    }
+
+    .event {
+      border-bottom: 1px solid rgba(150,180,205,.25);
+      padding: .55em 0;
+      display: flex;
+      flex-direction: column;
+      gap: .2em;
+    }
+
+    .event-date {
+      color: __UP_accentColor__;
+      font-size: .78em;
+      font-weight: 700;
+    }
+
+    .event-line {
+      display: flex;
+      align-items: flex-start;
+      gap: .65em;
+    }
+
+    .event-time {
+      flex: 0 0 5.2em;
+      font-size: .9em;
+    }
+
+    .event-title {
+      flex: 1 1 auto;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .daily .event {
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid rgba(150,180,205,.25);
+      border-left: .28em solid __UP_accentColor__;
+      border-radius: 0;
+      margin: .65em 0;
+      padding: .35em 0 .65em .8em;
+    }
+
+    .daily .event-title {
+      font-size: 1.22em;
+    }
+
+    .daily .event-time {
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    .all-day {
+      font-style: italic;
+    }
+
+    .status {
+      font-size: .75em;
+      opacity: .8;
+      padding: .4em 0;
+    }
   </style>
+
   <div id="calendar">
-    <div id="heading">WEEKLY SCHEDULE<div id="subheading"></div></div>
-    <div id="events"><div class="status">Loading sample calendar…</div></div>
+    <div id="heading">
+      WEEKLY SCHEDULE
+      <div id="subheading"></div>
+    </div>
+    <div id="events">
+      <div class="status">Loading sample calendar...</div>
+    </div>
   </div>
+
   <script type="text/javascript">
     var prefs = new gadgets.Prefs();
     var timer = null;
     var scrollTimer = null;
     var scrollPauseUntil = 0;
-    var sampleEvents = [
-      {start: offsetDate(0, 8, 30), end: offsetDate(0, 9, 15), title:"Morning Operations Briefing"},
-      {start: offsetDate(0, 10, 0), end: offsetDate(0, 10, 45), title:"Planning & Coordination"},
-      {start: offsetDate(1, 9, 0), end: offsetDate(1, 9, 30), title:"Staff Meeting"},
-      {start: offsetDate(2, 13, 30), end: offsetDate(2, 14, 15), title:"Training Review"},
-      {start: offsetDate(4, 14, 0), end: offsetDate(4, 15, 0), title:"Resource Planning"},
-      {start: offsetDate(6, 11, 0), end: offsetDate(6, 11, 30), title:"Weekly Check-in"},
-      {start: offsetDate(8, 15, 0), end: offsetDate(8, 16, 0), title:"Future Planning Session"}
-    ];
+
     function offsetDate(days, hours, minutes) {
-      var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+days); d.setHours(hours,minutes,0,0); return d;
+      var d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + days);
+      d.setHours(hours, minutes, 0, 0);
+      return d;
     }
-    function safePref(name, fallback) { try { var v = prefs.getString(name); return v || fallback; } catch(e) { return fallback; } }
-    function fmtDate(d) { return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}); }
-    function fmtTime(d) { return d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }
-    function escapeHtml(s) { return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+
+    var sampleEvents = [
+      {start: offsetDate(0, 8, 30), end: offsetDate(0, 9, 15),
+       title: "Morning Operations Briefing"},
+      {start: offsetDate(0, 10, 0), end: offsetDate(0, 10, 45),
+       title: "Planning & Coordination"},
+      {start: offsetDate(1, 9, 0), end: offsetDate(1, 9, 30),
+       title: "Staff Meeting"},
+      {start: offsetDate(2, 13, 30), end: offsetDate(2, 14, 15),
+       title: "Training Review"},
+      {start: offsetDate(4, 14, 0), end: offsetDate(4, 15, 0),
+       title: "Resource Planning"},
+      {start: offsetDate(6, 11, 0), end: offsetDate(6, 11, 30),
+       title: "Weekly Check-in"},
+      {start: offsetDate(8, 15, 0), end: offsetDate(8, 16, 0),
+       title: "Future Planning Session"}
+    ];
+
+    function safePref(name, fallback) {
+      try {
+        var v = prefs.getString(name);
+        return v || fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function fmtDate(d) {
+      return d.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function fmtTime(d) {
+      return d.toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[c];
+      });
+    }
+
     function parseICS(text) {
-      var unfolded = text.replace(/\r?\n[ \t]/g,"");
-      var blocks = unfolded.split("BEGIN:VEVENT").slice(1), out = [];
+      var unfolded = text.replace(/\r?\n[ \t]/g, "");
+      var blocks = unfolded.split("BEGIN:VEVENT").slice(1);
+      var out = [];
+
       blocks.forEach(function(block) {
         var part = block.split("END:VEVENT")[0];
-        function prop(key) { var re = new RegExp("(?:^|\\n)"+key+"(?:;[^:]*)?:(.*)","i"); var m=part.match(re); return m?m[1].trim():""; }
+
+        function prop(key) {
+          var re = new RegExp(
+            "(?:^|\\n)" + key + "(?:;[^:]*)?:(.*)", "i"
+          );
+          var m = part.match(re);
+          return m ? m[1].trim() : "";
+        }
+
         function parseDate(key) {
-          var re = new RegExp("(?:^|\\n)"+key+"(;[^:]*)?:(.*)","i"), m=part.match(re);
-          if(!m) return null;
-          var raw=m[2].trim();
-          if (/^\d{8}$/.test(raw)) return new Date(+raw.slice(0,4),+raw.slice(4,6)-1,+raw.slice(6,8));
-          var iso=raw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?Z?$/,"$1-$2-$3T$4:$5:$6");
-          if (/Z$/.test(raw)) return new Date(raw.slice(0,4)+"-"+raw.slice(4,6)+"-"+raw.slice(6,8)+"T"+raw.slice(9,11)+":"+raw.slice(11,13)+":"+raw.slice(13,15)+"Z");
-          if (m[1] && /VALUE=DATE/i.test(m[1])) return new Date(+raw.slice(0,4),+raw.slice(4,6)-1,+raw.slice(6,8));
+          var re = new RegExp(
+            "(?:^|\\n)" + key + "(;[^:]*)?:(.*)", "i"
+          );
+          var m = part.match(re);
+          if (!m) return null;
+
+          var raw = m[2].trim();
+
+          if (/^\d{8}$/.test(raw)) {
+            return new Date(
+              +raw.slice(0, 4),
+              +raw.slice(4, 6) - 1,
+              +raw.slice(6, 8)
+            );
+          }
+
+          if (/Z$/.test(raw)) {
+            return new Date(
+              raw.slice(0, 4) + "-" +
+              raw.slice(4, 6) + "-" +
+              raw.slice(6, 8) + "T" +
+              raw.slice(9, 11) + ":" +
+              raw.slice(11, 13) + ":" +
+              raw.slice(13, 15) + "Z"
+            );
+          }
+
+          if (m[1] && /VALUE=DATE/i.test(m[1])) {
+            return new Date(
+              +raw.slice(0, 4),
+              +raw.slice(4, 6) - 1,
+              +raw.slice(6, 8)
+            );
+          }
+
+          var iso = raw.replace(
+            /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?$/,
+            "$1-$2-$3T$4:$5:$6"
+          );
+
           return new Date(iso);
         }
-        var title=prop("SUMMARY").replace(/\\n/g," ").replace(/\\,/g,",").replace(/\\;/g,";");
-        var start=parseDate("DTSTART"), end=parseDate("DTEND");
-        if(start && !isNaN(start.getTime())) out.push({start:start,end:end||start,title:title||"(Untitled meeting)",allDay:/^\d{8}$/.test((part.match(/DTSTART(?:;[^:]*)?:(.*)/i)||[])[1]||"")});
+
+        var title = prop("SUMMARY")
+          .replace(/\\n/g, " ")
+          .replace(/\\,/g, ",")
+          .replace(/\\;/g, ";");
+
+        var start = parseDate("DTSTART");
+        var end = parseDate("DTEND");
+        var startMatch = part.match(
+          /(?:^|\n)DTSTART(?:;[^:]*)?:(.*)/i
+        );
+        var rawStart = startMatch ? startMatch[1].trim() : "";
+
+        if (start && !isNaN(start.getTime())) {
+          out.push({
+            start: start,
+            end: end || start,
+            title: title || "(Untitled meeting)",
+            allDay: /^\d{8}$/.test(rawStart)
+          });
+        }
       });
+
       return out;
     }
+
     function applyBackgroundMode() {
       var mode = safePref("backgroundMode", "transparent");
       var color = safePref("backgroundColor", "#111D2B");
       var background = mode === "solid" ? color : "transparent";
+
       document.body.style.backgroundColor = background;
-      document.getElementById("calendar").style.backgroundColor = background;
+      document.getElementById("calendar").style.backgroundColor =
+        background;
     }
+
+    function stopAutoScroll() {
+      if (scrollTimer) {
+        clearInterval(scrollTimer);
+        scrollTimer = null;
+      }
+      scrollPauseUntil = 0;
+    }
+
+    function startAutoScroll(list) {
+      if (safePref("scrollMode", "continuous") !== "continuous") {
+        return;
+      }
+
+      var duration =
+        (parseInt(safePref("scrollDuration", "30"), 10) || 30) * 1000;
+
+      var last = Date.now();
+
+      scrollTimer = setInterval(function() {
+        var now = Date.now();
+        var elapsed = now - last;
+        last = now;
+
+        if (now < scrollPauseUntil) return;
+
+        var max = list.scrollHeight - list.clientHeight;
+        if (max <= 2) return;
+
+        list.scrollTop += max * (elapsed / duration);
+
+        if (list.scrollTop >= max - 1) {
+          list.scrollTop = max;
+          scrollPauseUntil = now + 1200;
+
+          setTimeout(function() {
+            if (
+              list &&
+              list.scrollTop >= list.scrollHeight - list.clientHeight - 2
+            ) {
+              list.scrollTop = 0;
+            }
+          }, 1200);
+        }
+      }, 50);
+    }
+
     function render(events, status) {
-      var mode=safePref("displayMode","weekly"), days=parseInt(safePref("daysToShow","7"),10)||7;
-      var now=new Date(); now.setHours(0,0,0,0);
-      var cutoff=new Date(now); cutoff.setDate(cutoff.getDate()+(mode==="daily"?1:days));
-      events=events.filter(function(e){return e.start>=now && e.start<cutoff;}).sort(function(a,b){return a.start-b.start;});
-      var root=document.getElementById("calendar"), list=document.getElementById("events");
+      var mode = safePref("displayMode", "weekly");
+      var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
+
+      var now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      var cutoff = new Date(now);
+      cutoff.setDate(cutoff.getDate() + (mode === "daily" ? 1 : days));
+
+      events = events.filter(function(e) {
+        return e.start >= now && e.start < cutoff;
+      }).sort(function(a, b) {
+        return a.start - b.start;
+      });
+
+      var root = document.getElementById("calendar");
+      var list = document.getElementById("events");
+
       applyBackgroundMode();
-      root.className=mode==="daily"?"daily":"weekly";
-      document.getElementById("heading").firstChild.nodeValue=mode==="daily"?"TODAY'S MEETINGS":"WEEKLY SCHEDULE";
-      document.getElementById("subheading").textContent=mode==="daily"?fmtDate(now):"NEXT "+days+" DAYS";
-      list.className=safePref("scrollMode","continuous")==="continuous"?"scrolling":"";
+      root.className = mode === "daily" ? "daily" : "weekly";
+
+      document.getElementById("heading").firstChild.nodeValue =
+        mode === "daily" ? "TODAY'S MEETINGS" : "WEEKLY SCHEDULE";
+
+      document.getElementById("subheading").textContent =
+        mode === "daily" ? fmtDate(now) : "NEXT " + days + " DAYS";
+
+      list.className =
+        safePref("scrollMode", "continuous") === "continuous"
+          ? "scrolling"
+          : "";
+
       stopAutoScroll();
-      if(status) { list.innerHTML='<div class="status">'+escapeHtml(status)+'</div>'; return; }
-      if(!events.length) { list.innerHTML='<div class="status">No meetings scheduled in this period.</div>'; return; }
-      var order=[safePref("fieldOrder1","date"),safePref("fieldOrder2","time"),safePref("fieldOrder3","title")];
-      list.innerHTML=events.map(function(e) {
-        var date=fmtDate(e.start), time=e.allDay?"All day":fmtTime(e.start), title=escapeHtml(e.title);
-        var fields={date:'<div class="event-date">'+escapeHtml(date)+'</div>',time:'<div class="event-time">'+escapeHtml(time)+'</div>',title:'<div class="event-title">'+title+'</div>'};
-        var arranged=order.map(function(k){return fields[k]||"";}).join("");
-        return '<div class="event">'+arranged+'</div>';
+
+      if (status) {
+        list.innerHTML =
+          '<div class="status">' + escapeHtml(status) + '</div>';
+        return;
+      }
+
+      if (!events.length) {
+        list.innerHTML =
+          '<div class="status">No meetings scheduled in this period.</div>';
+        return;
+      }
+
+      var order = [
+        safePref("fieldOrder1", "date"),
+        safePref("fieldOrder2", "time"),
+        safePref("fieldOrder3", "title")
+      ];
+
+      list.innerHTML = events.map(function(e) {
+        var date = fmtDate(e.start);
+        var time = e.allDay ? "All day" : fmtTime(e.start);
+        var title = escapeHtml(e.title);
+
+        var fields = {
+          date: '<div class="event-date">' +
+            escapeHtml(date) + '</div>',
+          time: '<div class="event-time">' +
+            escapeHtml(time) + '</div>',
+          title: '<div class="event-title">' +
+            title + '</div>'
+        };
+
+        var arranged = order.map(function(k) {
+          return fields[k] || "";
+        }).join("");
+
+        return '<div class="event">' + arranged + '</div>';
       }).join("");
+
       startAutoScroll(list);
     }
-    function stopAutoScroll() {
-      if(scrollTimer) { clearInterval(scrollTimer); scrollTimer=null; }
-      scrollPauseUntil=0;
-    }
-    function startAutoScroll(list) {
-      if(safePref("scrollMode","continuous")!=="continuous") return;
-      var duration=(parseInt(safePref("scrollDuration","30"),10)||30)*1000;
-      var last=Date.now();
-      scrollTimer=setInterval(function() {
-        var now=Date.now(), elapsed=now-last; last=now;
-        if(now<scrollPauseUntil) return;
-        var max=list.scrollHeight-list.clientHeight;
-        if(max<=2) return;
-        list.scrollTop += max*(elapsed/duration);
-        if(list.scrollTop>=max-1) {
-          list.scrollTop=max;
-          scrollPauseUntil=now+1200;
-          setTimeout(function(){ if(list && list.scrollTop>=list.scrollHeight-list.clientHeight-2) list.scrollTop=0; },1200);
-        }
-      },50);
-    }
+
     function loadCalendar() {
-      var url=safePref("icsUrl","");
-      if(!url) { render(sampleEvents,null); return; }
-      fetch(url,{cache:"no-store"}).then(function(r){if(!r.ok) throw new Error("Feed returned HTTP "+r.status); return r.text();})
-      .then(function(t){var parsed=parseICS(t); if(!parsed.length) throw new Error("No events found in ICS response"); render(parsed,null);})
-      .catch(function(e){render([], "Could not load Outlook ICS feed. Browser access may be blocked (CORS) or the URL may be unavailable. "+e.message);});
+      var url = safePref("icsUrl", "");
+
+      if (!url) {
+        render(sampleEvents, null);
+        return;
+      }
+
+      fetch(url, {cache: "no-store"})
+        .then(function(r) {
+          if (!r.ok) {
+            throw new Error("Feed returned HTTP " + r.status);
+          }
+          return r.text();
+        })
+        .then(function(t) {
+          var parsed = parseICS(t);
+
+          if (!parsed.length) {
+            throw new Error("No events found in ICS response");
+          }
+
+          render(parsed, null);
+        })
+        .catch(function(e) {
+          render([], "Could not load Outlook ICS feed. Browser access " +
+            "may be blocked (CORS) or the URL may be unavailable. " +
+            e.message);
+        });
     }
+
     function onLoad() {
       loadCalendar();
-      var mins=parseInt(safePref("refreshMinutes","15"),10)||15;
-      timer=setInterval(loadCalendar,mins*60000);
+
+      var mins =
+        parseInt(safePref("refreshMinutes", "15"), 10) || 15;
+
+      timer = setInterval(loadCalendar, mins * 60000);
     }
+
     gadgets.util.registerOnLoadHandler(onLoad);
   </script>
   ]]>
