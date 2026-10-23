@@ -466,8 +466,9 @@ var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
       document.getElementById("heading").firstChild.nodeValue =
         mode === "daily" ? "TODAY'S MEETINGS" : "WEEKLY SCHEDULE";
 
-      document.getElementById("subheading").textContent =
-        mode === "daily" ? fmtDate(now) : "NEXT " + days + " DAYS";
+document.getElementById("subheading").textContent =
+  "DEBUG displayMode=[" + rawMode + "] | daysToShow=[" +
+  safePref("daysToShow", "(missing)") + "]";
 
       list.className =
         safePref("scrollMode", "continuous") === "continuous"
