@@ -435,9 +435,9 @@
     }
 
     function render(events, status) {
-      var mode = String(
-        safePref("displayMode", "weekly")
-      ).toLowerCase().trim();
+var rawMode = safePref("displayMode", "(missing)");
+      var mode = String(rawMode).toLowerCase().trim();
+
 
       if (mode !== "daily" && mode !== "weekly") {
         mode = "weekly";
@@ -466,8 +466,10 @@
       document.getElementById("heading").firstChild.nodeValue =
         mode === "daily" ? "TODAY'S MEETINGS" : "WEEKLY SCHEDULE";
 
-      document.getElementById("subheading").textContent =
-        mode === "daily" ? fmtDate(now) : "NEXT " + days + " DAYS";
+
+document.getElementById("subheading").textContent =
+        "DEBUG: displayMode=[" + rawMode + "]";
+
 
       list.className =
         safePref("scrollMode", "continuous") === "continuous"
