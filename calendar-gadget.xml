@@ -230,7 +230,9 @@
   </div>
 
   <script type="text/javascript">
-    var prefs = new gadgets.Prefs();
+   var prefs = (window.gadgets && typeof gadgets.Prefs === "function")
+  ? new gadgets.Prefs()
+  : null;
     var timer = null;
     var scrollTimer = null;
     var scrollPauseUntil = 0;
