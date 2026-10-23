@@ -466,10 +466,8 @@ var rawMode = safePref("displayMode", "(missing)");
       document.getElementById("heading").firstChild.nodeValue =
         mode === "daily" ? "TODAY'S MEETINGS" : "WEEKLY SCHEDULE";
 
-
-document.getElementById("subheading").textContent =
+      document.getElementById("subheading").textContent =
         "DEBUG: displayMode=[" + rawMode + "]";
-
 
       list.className =
         safePref("scrollMode", "continuous") === "continuous"
