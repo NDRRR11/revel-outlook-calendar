@@ -441,8 +441,9 @@ function safePref(name, fallback) {
     }
 
     function render(events, status) {
-      var mode = safePref("displayMode", "weekly");
-      var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
+var rawMode = safePref("displayMode", "(missing)");
+var mode = String(rawMode).toLowerCase().trim();
+var days = parseInt(safePref("daysToShow", "7"), 10) || 7;
 
       var now = new Date();
       now.setHours(0, 0, 0, 0);
