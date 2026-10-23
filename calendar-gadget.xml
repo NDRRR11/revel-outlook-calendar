@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Outlook Calendar - Custom"
+ 
+<ModulePrefs title="Outlook Calendar - Custom"
     description="Custom weekly and daily calendar display from an ICS feed"
     author="Custom Gadget"
     background="transparent">
+
+    <UserPref name="ForeColor" datatype="hidden" />
+    <UserPref name="BackColor" datatype="hidden" />
+    <UserPref name="rdW" display_name="Width" required="true"
+      default_value="280" datatype="hidden" />
+    <UserPref name="rdH" display_name="Height" required="true"
+      default_value="190" datatype="hidden" />
+    <UserPref name="rdKey"
+      default_value="*|DEVICE.REGISTRATIONKEY|*"
+      datatype="hidden" />
+
     <Require feature="dynamic-height"/>
+</ModulePrefs>
 
     <UserPref name="icsUrl" display_name="Outlook ICS URL"
       datatype="string" default_value=""/>
