@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revel Outlook Calendar Gadget - Preview</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#1b2935;background:#eef2f6}*{box-sizing:border-box}body{margin:0;padding:20px}.shell{max-width:1100px;margin:auto;display:grid;grid-template-columns:280px 1fr;gap:18px}.panel,.preview{background:white;border:1px solid #d5dde6;border-radius:14px;padding:18px;box-shadow:0 2px 8px #162b3b0a}.panel h1{font-size:20px;margin:0 0 6px}.muted{color:#627384;font-size:13px;line-height:1.45}.field{margin:15px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;padding:9px;border:1px solid #bfcbd6;border-radius:7px;background:white;font:inherit}.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.preview{background:#dfe7ef}.toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}.toolbar h2{font-size:17px;margin:0}.screen{height:560px;resize:vertical;overflow:auto;background:transparent;color:white;border-radius:9px;padding:20px;font-family:Arial,sans-serif;position:relative;isolation:isolate}.screen::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-conic-gradient(#ffffff20 0% 25%,#00000012 0% 50%) 50% / 24px 24px;pointer-events:none}.screen.solid::before{display:none}.screen.daily .event{background:transparent;border:0;border-bottom:1px solid #ffffff26;border-left:5px solid var(--accent);border-radius:0;margin:13px 0;padding:8px 0 12px 14px}.heading{font-weight:700;letter-spacing:.04em;color:var(--accent);font-size:1.15em;margin-bottom:15px}.subheading{font-size:.7em;opacity:.8;margin-top:5px}.event{display:flex;flex-direction:column;gap:5px;padding:12px 0;border-bottom:1px solid #ffffff2b}.event-date{color:var(--accent);font-size:.78em;font-weight:700}.event-line{display:flex;gap:12px;align-items:flex-start}.event-time{flex:0 0 88px}.event-title{font-weight:600;overflow-wrap:anywhere}.daily .event-title{font-size:1.2em}.daily .event-time{font-weight:700}.note{margin-top:12px;font-size:12px;color:#536576}.pill{font-size:12px;border-radius:30px;background:#e5edf5;padding:6px 10px;white-space:nowrap}@media(max-width:760px){body{padding:10px}.shell{grid-template-columns:1fr}.screen{height:480px}}
+</style></head>
+<body><div class="shell">
+<aside class="panel">
+<h1>Calendar Gadget Preview</h1><div class="muted">Local mockup with fictional events. These controls preview the design; they are not the Revel property editor.</div>
+<div class="field"><label for="mode">Display mode</label><select id="mode"><option value="weekly">Weekly schedule</option><option value="daily">Daily notices</option></select></div>
+<div class="field"><label for="days">Days to show</label><select id="days"><option>3</option><option>5</option><option selected>7</option><option>10</option><option>14</option></select></div>
+<div class="field"><label for="font">Font family</label><select id="font"><option>Arial</option><option>Segoe UI</option><option>Verdana</option><option>Tahoma</option></select></div>
+<div class="field"><label for="size">Base font size: <span id="sizeVal">20</span> px</label><input id="size" type="range" min="14" max="32" step="2" value="20"></div>
+<div class="field"><label for="backgroundMode">Background style</label><select id="backgroundMode"><option value="transparent" selected>Transparent (default)</option><option value="solid">Solid color</option></select><div class="muted" style="margin-top:5px">The checker pattern represents the template showing through.</div></div>
+<div class="field"><label>Colors</label><div class="pair"><div><label for="text">Text</label><input id="text" type="color" value="#ffffff"></div><div><label for="bg">Solid background</label><input id="bg" type="color" value="#111d2b"></div></div></div>
+<div class="field"><label for="accent">Accent color</label><input id="accent" type="color" value="#8ec5ff"></div>
+<div class="field"><label>Field order</label><div class="pair"><select id="f1"><option value="date">Date</option><option value="time">Time</option><option value="title">Meeting name</option></select><select id="f2"><option value="time">Time</option><option value="date">Date</option><option value="title">Meeting name</option></select></div><div style="margin-top:8px"><select id="f3"><option value="title">Meeting name</option><option value="date">Date</option><option value="time">Time</option></select></div><div class="muted" style="margin-top:6px">For this mockup, choose each field once.</div></div>
+<div class="field"><label for="scroll">Scrolling</label><select id="scroll"><option value="continuous">Continuous vertical scroll</option><option value="none">No scrolling</option></select></div>
+<div class="field"><label for="scrollDuration">Scroll cycle duration</label><select id="scrollDuration"><option value="15">Fast · 15 seconds</option><option value="30" selected>Normal · 30 seconds</option><option value="45">Slow · 45 seconds</option><option value="60">Very slow · 60 seconds</option><option value="90">Extra slow · 90 seconds</option></select><div class="muted" style="margin-top:5px">Approximate time to scroll from the top to the bottom of the event list.</div></div>
+<div class="field"><label for="count">Sample events</label><select id="count"><option value="all">All sample events</option><option value="few">Only first 3 events</option></select></div>
+<div class="note">Next step: publish this folder in GitHub and load the XML gadget into a test Revel template. ICS access must be tested separately.</div>
+</aside>
+<main class="preview"><div class="toolbar"><h2>Screen preview</h2><span class="pill">Resize the screen area</span></div><div class="screen" id="screen"><div class="heading" id="heading">WEEKLY SCHEDULE<div class="subheading" id="subheading">NEXT 7 DAYS</div></div><div id="events"></div></div><div class="note">Sample meetings are fictional and generated relative to today's date. This preview does not read Outlook.</div></main>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function addDays(days,h=9,m=0){let d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+days);d.setHours(h,m,0,0);return d}
+const sample=[
+[0,8,30,"Morning Operations Briefing"],[0,10,0,"Planning & Coordination"],[1,9,0,"Staff Meeting"],[2,13,30,"Training Review"],[4,14,0,"Resource Planning"],[6,11,0,"Weekly Check-in"],[8,15,0,"Future Planning Session"],[10,9,30,"Project Status Review"],[13,13,0,"Monthly Coordination"]
+].map(x=>({start:addDays(x[0],x[1],x[2]),title:x[3]}));
+function dateFmt(d){return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}
+function timeFmt(d){return d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}
+let scrollTimer=null, scrollPauseUntil=0;
+function render(){
+if(scrollTimer){clearInterval(scrollTimer);scrollTimer=null}
+let mode=$("mode").value,days=+$("days").value,now=new Date();now.setHours(0,0,0,0);
+let end=new Date(now);end.setDate(end.getDate()+(mode==="daily"?1:days));
+let events=sample.filter(e=>e.start>=now&&e.start<end);if($("count").value==="few")events=events.slice(0,3);
+const screen=$("screen");screen.className="screen "+(mode==="daily"?"daily":"");screen.style.fontFamily=$("font").value+", sans-serif";screen.style.fontSize=$("size").value+"px";screen.style.color=$("text").value;screen.style.background=$("backgroundMode").value==="solid"?$("bg").value:"transparent";screen.classList.toggle("solid",$("backgroundMode").value==="solid");screen.style.setProperty("--accent",$("accent").value);$("sizeVal").textContent=$("size").value;
+$("heading").childNodes[0].nodeValue=mode==="daily"?"TODAY'S MEETINGS":"WEEKLY SCHEDULE";$("subheading").textContent=mode==="daily"?dateFmt(now).toUpperCase():"NEXT "+days+" DAYS";
+let order=[$("f1").value,$("f2").value,$("f3").value], seen=new Set(order);if(seen.size!==3){$("events").innerHTML='<div class="event">Please select Date, Time, and Meeting name once each.</div>';return}
+$("events").style.overflowY=$("scroll").value==="continuous"?"auto":"hidden";$("events").style.height="calc(100% - 55px)";
+if(!events.length){$("events").innerHTML='<div class="event">No meetings scheduled in this period.</div>';return}
+$("events").innerHTML=events.map(e=>{
+let values={date:`<div class="event-date">${dateFmt(e.start)}</div>`,time:`<div class="event-time">${timeFmt(e.start)}</div>`,title:`<div class="event-title">${e.title.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}</div>`};
+return `<div class="event">${order.map(k=>values[k]).join("")}</div>`
+}).join("");
+if($("scroll").value==="continuous"){
+let last=Date.now(), duration=(+$("scrollDuration").value)*1000;
+scrollTimer=setInterval(()=>{
+let now=Date.now(),elapsed=now-last;last=now;
+if(now<scrollPauseUntil)return;
+let el=$("events"),max=el.scrollHeight-el.clientHeight;
+if(max<=2)return;
+el.scrollTop+=max*elapsed/duration;
+if(el.scrollTop>=max-1){el.scrollTop=max;scrollPauseUntil=now+1200;setTimeout(()=>{if(el.scrollTop>=el.scrollHeight-el.clientHeight-2)el.scrollTop=0},1200)}
+},50);
+}
+}
+["mode","days","font","size","text","bg","backgroundMode","accent","f1","f2","f3","scroll","scrollDuration","count"].forEach(id=>$(id).addEventListener("input",render));render();
+</script></body></html>
