@@ -596,7 +596,15 @@ function loadCalendar() {
       timer = setInterval(loadCalendar, mins * 60000);
     }
 
-    gadgets.util.registerOnLoadHandler(onLoad);
+if (window.gadgets &&
+    gadgets.util &&
+    typeof gadgets.util.registerOnLoadHandler === "function") {
+  gadgets.util.registerOnLoadHandler(onLoad);
+} else if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", onLoad);
+} else {
+  onLoad();
+}
   </script>
   ]]>
   </Content>
