@@ -262,14 +262,15 @@
        title: "Future Planning Session"}
     ];
 
-    function safePref(name, fallback) {
-      try {
-        var v = prefs.getString(name);
-        return v || fallback;
-      } catch (e) {
-        return fallback;
-      }
-    }
+function safePref(name, fallback) {
+  try {
+    if (!prefs) return fallback;
+    var value = prefs.getString(name);
+    return value || fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
 
     function fmtDate(d) {
       return d.toLocaleDateString(undefined, {
